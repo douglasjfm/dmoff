@@ -66,8 +66,7 @@ class MainActivity : AppCompatActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-            prefs.edit().putBoolean("blocker_enabled", true).apply()
-            Toast.makeText(this, "Bloqueador ativo", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Permissão concedida", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -92,7 +91,7 @@ class MainActivity : AppCompatActivity() {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Deixe-me OFF") },
+                    title = { Text(getString(R.string.app_name)) },
                     actions = {
                         IconButton(onClick = { showMenu = !showMenu }) {
                             Icon(Icons.Default.MoreVert, contentDescription = "Menu")
@@ -125,9 +124,10 @@ class MainActivity : AppCompatActivity() {
 
     @Composable
     fun MainScreen() {
+        val roleManager = getSystemService(Context.ROLE_SERVICE) as RoleManager
         // Use derivedState to keep UI synced with SharedPreferences
         var isBlockerEnabled by remember {
-            mutableStateOf(prefs.getBoolean("blocker_enabled", false))
+            mutableStateOf(prefs.getBoolean("blocker_enabled", false) && roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING))
         }
         val iCounter = prefs.getInt("blocker_counter", 0)
 
@@ -138,7 +138,7 @@ class MainActivity : AppCompatActivity() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Deixe-me OFF", style = MaterialTheme.typography.headlineMedium)
+            Text(text = getString(R.string.app_name), style = MaterialTheme.typography.headlineMedium)
             // Display Version
             Text(
                 text = "Versão: ${getAppVersionName()}",
@@ -171,7 +171,10 @@ class MainActivity : AppCompatActivity() {
                 )
             }
             if (isBlockerEnabled) Text("Bloqueios desde a ativação: $iCounter", modifier = Modifier.padding(top = 16.dp))
-            else Text("Bloqueios desde a ativação: n/a", modifier = Modifier.padding(top = 16.dp))
+            else {
+                Text("Bloqueios desde a ativação: n/a", modifier = Modifier.padding(top = 16.dp))
+                prefs.edit().putInt("blocker_counter", 0).apply()
+            }
         }
     }
 
