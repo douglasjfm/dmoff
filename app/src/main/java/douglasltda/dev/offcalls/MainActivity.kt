@@ -160,11 +160,13 @@ class MainActivity : AppCompatActivity() {
                         } else {
                             isBlockerEnabled = false
                             prefs.edit().putBoolean("blocker_enabled", false).apply()
+                            prefs.edit().putInt("blocker_counter", 0).apply()
                         }
                     }
                 )
             }
-            Text("Total de chamadas bloqueadas: $iCounter", modifier = Modifier.padding(top = 16.dp))
+            if (isBlockerEnabled) Text("Bloqueios desde a ativação: $iCounter", modifier = Modifier.padding(top = 16.dp))
+            else Text("Bloqueios desde a ativação: n/a", modifier = Modifier.padding(top = 16.dp))
         }
     }
 
@@ -210,7 +212,7 @@ class MainActivity : AppCompatActivity() {
     @Composable
     fun HistoryScreen() {
         val blockedCalls = remember { getBlockedCallsFromLog() }
-        val limit = prefs.getInt("blocker_counter", 0)
+        val limit = blockedCalls.size
 
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             Text("Registro de chamadas bloqueadas", style = MaterialTheme.typography.titleLarge)
