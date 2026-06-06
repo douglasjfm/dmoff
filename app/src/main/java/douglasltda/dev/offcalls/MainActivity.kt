@@ -27,6 +27,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import douglasltda.dev.offcalls.ui.theme.OffCallsTheme
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
     private val prefs by lazy { getSharedPreferences("off_calls_prefs", Context.MODE_PRIVATE) }
@@ -129,7 +132,9 @@ class MainActivity : AppCompatActivity() {
         val iCounter = prefs.getInt("blocker_counter", 0)
 
         Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -214,7 +219,9 @@ class MainActivity : AppCompatActivity() {
         val blockedCalls = remember { getBlockedCallsFromLog() }
         val limit = blockedCalls.size
 
-        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)) {
             Text("Registro de chamadas bloqueadas", style = MaterialTheme.typography.titleLarge)
             Text("Exibindo $limit items dos registros", style = MaterialTheme.typography.bodySmall)
             Spacer(modifier = Modifier.height(8.dp))
@@ -225,9 +232,11 @@ class MainActivity : AppCompatActivity() {
                 }
             } else {
                 LazyColumn {
-                    items(blockedCalls.take(if (limit > 0) limit else 50)) { number ->
-                        Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-                            Text(text = number, modifier = Modifier.padding(16.dp))
+                    items(blockedCalls.take(if (limit > 0) limit else 50)) { record ->
+                        Card(modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)) {
+                            Text(text = record.first + " - " + record.second, modifier = Modifier.padding(16.dp))
                         }
                     }
                 }
@@ -235,12 +244,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getBlockedCallsFromLog(): List<String> {
-        val list = mutableListOf<String>()
+    private fun getBlockedCallsFromLog(): List<Pair<String, String>> {
+        val list = mutableListOf<Pair<String, String>>()
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+
         try {
             val cursor: Cursor? = contentResolver.query(
                 CallLog.Calls.CONTENT_URI,
-                arrayOf(CallLog.Calls.NUMBER),
+                arrayOf(CallLog.Calls.NUMBER, CallLog.Calls.DATE), // Added DATE here
                 "${CallLog.Calls.TYPE} = ?",
                 arrayOf(CallLog.Calls.BLOCKED_TYPE.toString()),
                 "${CallLog.Calls.DATE} DESC"
@@ -248,12 +259,18 @@ class MainActivity : AppCompatActivity() {
 
             cursor?.use {
                 val numberIndex = it.getColumnIndex(CallLog.Calls.NUMBER)
+                val dateIndex = it.getColumnIndex(CallLog.Calls.DATE)
+
                 while (it.moveToNext()) {
-                    list.add(it.getString(numberIndex))
+                    val number = it.getString(numberIndex)
+                    val dateLong = it.getLong(dateIndex)
+                    val formattedDate = dateFormat.format(Date(dateLong))
+
+                    list.add(number to formattedDate)
                 }
             }
         } catch (e: SecurityException) {
-            // Permission not granted
+            // Permission not granted handled by handleHistoryNavigation
         }
         return list
     }
