@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Off Calls"
+rootProject.name = "Deixe-me OFF"
 include(":app")
  

@@ -1,182 +1,272 @@
 package douglasltda.dev.offcalls
 
-import android.os.Bundle
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import douglasltda.dev.offcalls.ui.theme.OffCallsTheme
+import android.Manifest
 import android.app.role.RoleManager
 import android.content.Context
 import android.content.pm.PackageManager
+import android.database.Cursor
+import android.os.Bundle
+import android.provider.CallLog
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.semantics.error
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import douglasltda.dev.offcalls.ui.theme.OffCallsTheme
 
 class MainActivity : AppCompatActivity() {
-    // SharedPreferences to save the toggle state
     private val prefs by lazy { getSharedPreferences("off_calls_prefs", Context.MODE_PRIVATE) }
 
-    // Contact Permission Request Launcher
-    private val requestPermissionLauncher = registerForActivityResult(
+    private var currentScreen by mutableStateOf("main")
+
+    // --- Permission Launchers ---
+
+    // Launcher for READ_CONTACTS (needed to filter calls)
+    private val requestContactsLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
+            // Once contacts granted, we usually need the Role as well
             checkAndRequestRole()
         } else {
-            Toast.makeText(this, "Contacts permission is required to filter calls.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Permissão necessária para acessar contatos e identificar bloqueios.", Toast.LENGTH_LONG).show()
         }
     }
 
-    // Role Manager Launcher (Android 10+)
+    // Launcher for READ_CALL_LOG (needed for History screen)
+    private val requestCallLogLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            currentScreen = "history"
+        } else {
+            Toast.makeText(this, "Permissão negada. Não é possível exibir o histórico.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // Launcher for the Default Call Screening Role
     private val requestRoleLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-            Toast.makeText(this, "App successfully set as Call Screening app!", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(this, "App needs to be the screening app to block calls.", Toast.LENGTH_LONG).show()
+            prefs.edit().putBoolean("blocker_enabled", true).apply()
+            Toast.makeText(this, "Bloqueador ativo", Toast.LENGTH_SHORT).show()
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // setContentView(R.layout.layout) // Create a interface for requesting user to turn on or turn off
-
-        // Use setContent for Jetpack Compose UI
         setContent {
             OffCallsTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
+                MainAppContainer()
+            }
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun MainAppContainer() {
+        var showMenu by remember { mutableStateOf(false) }
+
+        BackHandler(enabled = currentScreen == "history") {
+            currentScreen = "main"
+        }
+
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Deixe-me OFF") },
+                    actions = {
+                        IconButton(onClick = { showMenu = !showMenu }) {
+                            Icon(Icons.Default.MoreVert, contentDescription = "Menu")
+                        }
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Histórico de bloqueios") },
+                                onClick = {
+                                    showMenu = false
+                                    handleHistoryNavigation()
+                                }
+                            )
+                        }
+                    }
+                )
+            }
+        ) { padding ->
+            Box(modifier = Modifier.padding(padding)) {
+                if (currentScreen == "main") {
                     MainScreen()
+                } else {
+                    HistoryScreen()
                 }
             }
         }
-
-        // 1. Check Contacts Permission
-        /*if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS)
-            == PackageManager.PERMISSION_GRANTED) {
-            checkAndRequestRole()
-        } else {
-            requestPermissionLauncher.launch(android.Manifest.permission.READ_CONTACTS)
-        }*/
-    }
-
-    // 2. Request the Call Screening Role
-    private fun checkAndRequestRole(): Boolean {
-        // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        val roleManager = getSystemService(Context.ROLE_SERVICE) as RoleManager
-        val isRoleHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
-
-        if (!isRoleHeld) {
-            val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)
-            requestRoleLauncher.launch(intent)
-            return false
-        } else {
-            Toast.makeText(this, "Off Calls is active.", Toast.LENGTH_SHORT).show()
-            return true
-        }
-        /*} else {
-            Toast.makeText(this, "This API requires Android 10 (API 29) or higher.", Toast.LENGTH_LONG).show()
-        }*/
     }
 
     @Composable
     fun MainScreen() {
-        // State for the switch, persisted in SharedPreferences
+        // Use derivedState to keep UI synced with SharedPreferences
         var isBlockerEnabled by remember {
             mutableStateOf(prefs.getBoolean("blocker_enabled", false))
         }
+        val iCounter = prefs.getInt("blocker_counter", 0)
 
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxSize().padding(16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Text(text = "Deixe-me OFF", style = MaterialTheme.typography.headlineMedium)
+            // Display Version
             Text(
-                text = "Off Calls Blocker",
-                style = MaterialTheme.typography.headlineMedium
+                text = "Versão: ${getAppVersionName()}",
+                style = MaterialTheme.typography.labelSmall,
+                color = Color.Gray,
+                modifier = Modifier.padding(top = 1.dp)
             )
-            Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = if (isBlockerEnabled) "Blocking is ACTIVE" else "Blocking is INACTIVE",
-                color = if (isBlockerEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                text = if (isBlockerEnabled) "HABILITADO" else "DESABILITADO",
+                color = if (isBlockerEnabled) Color(0xFF4CAF50) else Color.Red
             )
             Spacer(modifier = Modifier.height(24.dp))
-
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Enable Call Blocker")
+                val sEnabled = if (isBlockerEnabled) "Desabilitar" else "Habilitar"
+                Text("$sEnabled bloqueio")
                 Spacer(modifier = Modifier.width(16.dp))
-                Text("Counter: ${prefs.getInt("blocker_counter", 0)}")
                 Switch(
                     checked = isBlockerEnabled,
                     onCheckedChange = { isChecked ->
                         if (isChecked) {
-                            // When turning ON, check permissions
                             handleEnableBlocker {
                                 isBlockerEnabled = true
-                                prefs.edit().putBoolean("blocker_enabled", true).apply()
-                                prefs.edit().putInt("blocker_counter", 0).apply()
                             }
                         } else {
-                            // Turn OFF
                             isBlockerEnabled = false
                             prefs.edit().putBoolean("blocker_enabled", false).apply()
                         }
                     }
                 )
             }
+            Text("Total de chamadas bloqueadas: $iCounter", modifier = Modifier.padding(top = 16.dp))
         }
     }
+
+    // --- Logic Helpers ---
 
     private fun handleEnableBlocker(onSuccess: () -> Unit) {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS)
-            == PackageManager.PERMISSION_GRANTED) {
-            if (checkAndRequestRole()) {
-                onSuccess()
-            }
-        } else {
-            requestPermissionLauncher.launch(android.Manifest.permission.READ_CONTACTS)
+        // 1. Check Contacts Permission
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
+            != PackageManager.PERMISSION_GRANTED) {
+            requestContactsLauncher.launch(Manifest.permission.READ_CONTACTS)
+        }
+        // 2. Check Role
+        else if (checkAndRequestRole()) {
+            // If role is already held
+            prefs.edit().putBoolean("blocker_enabled", true).apply()
+            onSuccess()
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    private fun handleHistoryNavigation() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG)
+            == PackageManager.PERMISSION_GRANTED) {
+            currentScreen = "history"
+        } else {
+            requestCallLogLauncher.launch(Manifest.permission.READ_CALL_LOG)
+        }
+    }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    OffCallsTheme {
-        Greeting("Android")
+    private fun checkAndRequestRole(): Boolean {
+        val roleManager = getSystemService(Context.ROLE_SERVICE) as RoleManager
+        val isRoleHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
+        return if (!isRoleHeld) {
+            val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)
+            requestRoleLauncher.launch(intent)
+            false
+        } else {
+            true
+        }
+    }
+
+    // --- History Logic ---
+
+    @Composable
+    fun HistoryScreen() {
+        val blockedCalls = remember { getBlockedCallsFromLog() }
+        val limit = prefs.getInt("blocker_counter", 0)
+
+        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+            Text("Registro de chamadas bloqueadas", style = MaterialTheme.typography.titleLarge)
+            Text("Exibindo $limit items dos registros", style = MaterialTheme.typography.bodySmall)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (blockedCalls.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("Nenhuma chamada bloqueada nos registros.")
+                }
+            } else {
+                LazyColumn {
+                    items(blockedCalls.take(if (limit > 0) limit else 50)) { number ->
+                        Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                            Text(text = number, modifier = Modifier.padding(16.dp))
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getBlockedCallsFromLog(): List<String> {
+        val list = mutableListOf<String>()
+        try {
+            val cursor: Cursor? = contentResolver.query(
+                CallLog.Calls.CONTENT_URI,
+                arrayOf(CallLog.Calls.NUMBER),
+                "${CallLog.Calls.TYPE} = ?",
+                arrayOf(CallLog.Calls.BLOCKED_TYPE.toString()),
+                "${CallLog.Calls.DATE} DESC"
+            )
+
+            cursor?.use {
+                val numberIndex = it.getColumnIndex(CallLog.Calls.NUMBER)
+                while (it.moveToNext()) {
+                    list.add(it.getString(numberIndex))
+                }
+            }
+        } catch (e: SecurityException) {
+            // Permission not granted
+        }
+        return list
+    }
+
+    private fun getAppVersionName(): String {
+        return try {
+            val packageInfo = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0))
+            } else {
+                @Suppress("DEPRECATION")
+                packageManager.getPackageInfo(packageName, 0)
+            }
+            packageInfo.versionName ?: "Unknown"
+        } catch (e: Exception) {
+            "N/A"
+        }
     }
 }
