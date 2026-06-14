@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">Deixe-me OFF</string>
+    <string name="str_bloqueios_cont">Bloqueios desde a ativação: %d</string>
+    <string name="str_bloqueios_na">Bloqueios desde a ativação: n/a</string>
+    <string name="str_regis_tit">Registro de chamadas bloqueadas</string>
+    <string name="str_regis_desc">Exibindo %d items dos registros</string>
+    <string name="str_regis_empty">Nenhuma chamada bloqueada nos registros.</string>
+    <string name="str_versao">Versão: %s</string>
+    <string name="str_hab">HABILITADO</string>
+    <string name="str_desab">DESABILITADO</string>
+    <string name="str_habilitar">Habilitar</string>
+    <string name="str_desabilitar">Desabilitar</string>
+    <string name="str_swit_desc">%s bloqueio</string>
+    <string name="str_menu_opt">Histórico de bloqueios</string>
+    <string name="str_msg_permissao">Permissão concedida</string>
+    <string name="str_msg_perm_negada">Permissão negada. Não é possível exibir o histórico.</string>
+    <string name="str_msg_permissao_req">Permissão necessária para acessar contatos e identificar bloqueios.</string>
 </resources>

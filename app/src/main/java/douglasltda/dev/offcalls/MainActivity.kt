@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
             // Once contacts granted, we usually need the Role as well
             checkAndRequestRole()
         } else {
-            Toast.makeText(this, "Permissão necessária para acessar contatos e identificar bloqueios.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.str_msg_permissao_req), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         if (isGranted) {
             currentScreen = "history"
         } else {
-            Toast.makeText(this, "Permissão negada. Não é possível exibir o histórico.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.str_msg_perm_negada), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-            Toast.makeText(this, "Permissão concedida", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.str_msg_permissao), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity() {
                             onDismissRequest = { showMenu = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Histórico de bloqueios") },
+                                text = { Text(getString(R.string.str_menu_opt)) },
                                 onClick = {
                                     showMenu = false
                                     handleHistoryNavigation()
@@ -141,19 +141,19 @@ class MainActivity : AppCompatActivity() {
             Text(text = getString(R.string.app_name), style = MaterialTheme.typography.headlineMedium)
             // Display Version
             Text(
-                text = "Versão: ${getAppVersionName()}",
+                text = getString(R.string.str_versao, getAppVersionName()),
                 style = MaterialTheme.typography.labelSmall,
                 color = Color.Gray,
                 modifier = Modifier.padding(top = 1.dp)
             )
             Text(
-                text = if (isBlockerEnabled) "HABILITADO" else "DESABILITADO",
+                text = if (isBlockerEnabled) getString(R.string.str_hab) else getString(R.string.str_desab),
                 color = if (isBlockerEnabled) Color(0xFF4CAF50) else Color.Red
             )
             Spacer(modifier = Modifier.height(24.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                val sEnabled = if (isBlockerEnabled) "Desabilitar" else "Habilitar"
-                Text("$sEnabled bloqueio")
+                val sEnabled = if (isBlockerEnabled) getString(R.string.str_desabilitar) else getString(R.string.str_habilitar)
+                Text(getString(R.string.str_swit_desc, sEnabled))
                 Spacer(modifier = Modifier.width(16.dp))
                 Switch(
                     checked = isBlockerEnabled,
@@ -170,9 +170,9 @@ class MainActivity : AppCompatActivity() {
                     }
                 )
             }
-            if (isBlockerEnabled) Text("Bloqueios desde a ativação: $iCounter", modifier = Modifier.padding(top = 16.dp))
+            if (isBlockerEnabled) Text(getString(R.string.str_bloqueios_cont, iCounter), modifier = Modifier.padding(top = 16.dp))
             else {
-                Text("Bloqueios desde a ativação: n/a", modifier = Modifier.padding(top = 16.dp))
+                Text(getString(R.string.str_bloqueios_na), modifier = Modifier.padding(top = 16.dp))
                 prefs.edit().putInt("blocker_counter", 0).apply()
             }
         }
@@ -225,13 +225,13 @@ class MainActivity : AppCompatActivity() {
         Column(modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)) {
-            Text("Registro de chamadas bloqueadas", style = MaterialTheme.typography.titleLarge)
-            Text("Exibindo $limit items dos registros", style = MaterialTheme.typography.bodySmall)
+            Text(getString(R.string.str_regis_tit), style = MaterialTheme.typography.titleLarge)
+            Text(getString(R.string.str_regis_desc, limit), style = MaterialTheme.typography.bodySmall)
             Spacer(modifier = Modifier.height(8.dp))
 
             if (blockedCalls.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Nenhuma chamada bloqueada nos registros.")
+                    Text(getString(R.string.str_regis_empty))
                 }
             } else {
                 LazyColumn {
