@@ -12,7 +12,18 @@
     <string name="str_desabilitar">Desabilitar</string>
     <string name="str_swit_desc">%s bloqueio</string>
     <string name="str_menu_opt">Histórico de bloqueios</string>
+    <string name="str_menu_perms">Permissões</string>
     <string name="str_msg_permissao">Permissão concedida</string>
     <string name="str_msg_perm_negada">Permissão negada. Não é possível exibir o histórico.</string>
     <string name="str_msg_permissao_req">Permissão necessária para acessar contatos e identificar bloqueios.</string>
+    <string name="str_btn_verify_permissions">Verifique as permissões</string>
+    <string name="str_perm_contacts">Contatos</string>
+    <string name="str_perm_call_log">Registro de chamadas</string>
+    <string name="str_perm_role">Filtragem de chamadas</string>
+    <string name="str_status_granted">Concedida</string>
+    <string name="str_status_pending">Pendente</string>
+    <string name="str_perm_title">Status das Permissões</string>
+
+    <string name="str_apppref_key_blocker">blocker_enabled</string>
+    <string name="str_apppref_key_counter">blocker_counter</string>
 </resources>

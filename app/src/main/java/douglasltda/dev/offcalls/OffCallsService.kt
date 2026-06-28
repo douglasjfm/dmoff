@@ -16,8 +16,8 @@ class OffCallsService : CallScreeningService() {
             return
         }
 
-        val prefEnabled = prefs.getBoolean("blocker_enabled", false)
-        val prefsCounter = prefs.getInt("blocker_counter", 0)
+        val prefEnabled = prefs.getBoolean(getString(R.string.str_apppref_key_blocker), false)
+        val prefsCounter = prefs.getInt(getString(R.string.str_apppref_key_counter), 0)
 
         // Get the incoming phone number
         val rawHandle = callDetails.handle
@@ -41,7 +41,7 @@ class OffCallsService : CallScreeningService() {
                     .build()
 
                 respondToCall(callDetails, response)
-                prefs.edit().putInt("blocker_counter", prefsCounter + 1).apply()
+                prefs.edit().putInt(getString(R.string.str_apppref_key_counter), prefsCounter + 1).apply()
                 return
             }
         }

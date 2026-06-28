@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            currentScreen = "history"
+            // Logic handled by the switch or navigation caller
         } else {
             Toast.makeText(this, getString(R.string.str_msg_perm_negada), Toast.LENGTH_SHORT).show()
         }
@@ -72,10 +72,23 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        verifyPermissionsOnStartup()
         setContent {
             OffCallsTheme {
                 MainAppContainer()
             }
+        }
+    }
+
+    private fun verifyPermissionsOnStartup() {
+        val roleManager = getSystemService(Context.ROLE_SERVICE) as RoleManager
+        val hasContacts = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
+        val hasCallLog = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED
+        val hasRole = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
+        val isBlockerEnabled = prefs.getBoolean(getString(R.string.str_apppref_key_blocker), false)
+
+        if (prefs.getBoolean(getString(R.string.str_apppref_key_blocker), false) && (!hasContacts || !hasCallLog || !hasRole)) {
+            prefs.edit().putBoolean(getString(R.string.str_apppref_key_blocker), false).apply()
         }
     }
 
@@ -84,7 +97,7 @@ class MainActivity : AppCompatActivity() {
     fun MainAppContainer() {
         var showMenu by remember { mutableStateOf(false) }
 
-        BackHandler(enabled = currentScreen == "history") {
+        BackHandler(enabled = currentScreen != "main") {
             currentScreen = "main"
         }
 
@@ -107,16 +120,23 @@ class MainActivity : AppCompatActivity() {
                                     handleHistoryNavigation()
                                 }
                             )
+                            DropdownMenuItem(
+                                text = { Text(getString(R.string.str_menu_perms)) },
+                                onClick = {
+                                    showMenu = false
+                                    currentScreen = "permissions"
+                                }
+                            )
                         }
                     }
                 )
             }
         ) { padding ->
             Box(modifier = Modifier.padding(padding)) {
-                if (currentScreen == "main") {
-                    MainScreen()
-                } else {
-                    HistoryScreen()
+                when (currentScreen) {
+                    "main" -> MainScreen()
+                    "history" -> HistoryScreen()
+                    "permissions" -> PermissionsScreen()
                 }
             }
         }
@@ -125,11 +145,16 @@ class MainActivity : AppCompatActivity() {
     @Composable
     fun MainScreen() {
         val roleManager = getSystemService(Context.ROLE_SERVICE) as RoleManager
+        val hasContacts = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
+        val hasCallLog = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED
+        val isRoleHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
+        val allPermissionsGranted = hasContacts && hasCallLog && isRoleHeld
+
         // Use derivedState to keep UI synced with SharedPreferences
         var isBlockerEnabled by remember {
-            mutableStateOf(prefs.getBoolean("blocker_enabled", false) && roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING))
+            mutableStateOf(prefs.getBoolean(getString(R.string.str_apppref_key_blocker), false) && allPermissionsGranted)
         }
-        val iCounter = prefs.getInt("blocker_counter", 0)
+        val iCounter = prefs.getInt(getString(R.string.str_apppref_key_counter), 0)
 
         Column(
             modifier = Modifier
@@ -164,16 +189,23 @@ class MainActivity : AppCompatActivity() {
                             }
                         } else {
                             isBlockerEnabled = false
-                            prefs.edit().putBoolean("blocker_enabled", false).apply()
-                            prefs.edit().putInt("blocker_counter", 0).apply()
+                            prefs.edit().putBoolean(getString(R.string.str_apppref_key_blocker), false).apply()
+                            prefs.edit().putInt(getString(R.string.str_apppref_key_counter), 0).apply()
                         }
                     }
                 )
             }
-            if (isBlockerEnabled) Text(getString(R.string.str_bloqueios_cont, iCounter), modifier = Modifier.padding(top = 16.dp))
-            else {
+            if (isBlockerEnabled) {
+                Text(getString(R.string.str_bloqueios_cont, iCounter), modifier = Modifier.padding(top = 16.dp))
+            } else {
                 Text(getString(R.string.str_bloqueios_na), modifier = Modifier.padding(top = 16.dp))
-                prefs.edit().putInt("blocker_counter", 0).apply()
+                if (!allPermissionsGranted) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(onClick = { currentScreen = "permissions" }) {
+                        Text(getString(R.string.str_btn_verify_permissions))
+                    }
+                }
+                prefs.edit().putInt(getString(R.string.str_apppref_key_counter), 0).apply()
             }
         }
     }
@@ -186,10 +218,15 @@ class MainActivity : AppCompatActivity() {
             != PackageManager.PERMISSION_GRANTED) {
             requestContactsLauncher.launch(Manifest.permission.READ_CONTACTS)
         }
-        // 2. Check Role
+        // 2. Check Call Log Permission
+        else if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG)
+            != PackageManager.PERMISSION_GRANTED) {
+            requestCallLogLauncher.launch(Manifest.permission.READ_CALL_LOG)
+        }
+        // 3. Check Role
         else if (checkAndRequestRole()) {
             // If role is already held
-            prefs.edit().putBoolean("blocker_enabled", true).apply()
+            prefs.edit().putBoolean(getString(R.string.str_apppref_key_blocker), true).apply()
             onSuccess()
         }
     }
@@ -216,6 +253,71 @@ class MainActivity : AppCompatActivity() {
     }
 
     // --- History Logic ---
+
+    @Composable
+    fun PermissionsScreen() {
+        val roleManager = getSystemService(Context.ROLE_SERVICE) as RoleManager
+        val hasContacts = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
+        val hasCallLog = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED
+        val isRoleHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Text(getString(R.string.str_perm_title), style = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            PermissionItem(
+                title = getString(R.string.str_perm_contacts),
+                isGranted = hasContacts,
+                onClick = { if (!hasContacts) requestContactsLauncher.launch(Manifest.permission.READ_CONTACTS) }
+            )
+            PermissionItem(
+                title = getString(R.string.str_perm_call_log),
+                isGranted = hasCallLog,
+                onClick = { if (!hasCallLog) requestCallLogLauncher.launch(Manifest.permission.READ_CALL_LOG) }
+            )
+            PermissionItem(
+                title = getString(R.string.str_perm_role),
+                isGranted = isRoleHeld,
+                onClick = { if (!isRoleHeld) checkAndRequestRole() }
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+            Button(
+                onClick = { currentScreen = "main" },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(getString(android.R.string.ok))
+            }
+        }
+    }
+
+    @Composable
+    fun PermissionItem(title: String, isGranted: Boolean, onClick: () -> Unit) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RadioButton(
+                selected = isGranted,
+                onClick = onClick
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = title, style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    text = if (isGranted) getString(R.string.str_status_granted) else getString(R.string.str_status_pending),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (isGranted) Color(0xFF4CAF50) else Color.Red
+                )
+            }
+        }
+    }
 
     @Composable
     fun HistoryScreen() {
