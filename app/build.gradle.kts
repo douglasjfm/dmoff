@@ -6,14 +6,14 @@ plugins {
 
 android {
     namespace = "douglasltda.dev.offcalls"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "douglasltda.dev.offcalls"
         minSdk = 29
-        targetSdk = 35
-        versionCode = 6
-        versionName = "1.6.6"
+        targetSdk = 36
+        versionCode = 7
+        versionName = "1.8.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
