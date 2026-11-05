@@ -12,8 +12,8 @@ android {
         applicationId = "douglasltda.dev.offcalls"
         minSdk = 29
         targetSdk = 36
-        versionCode = 8
-        versionName = "1.10.8"
+        versionCode = 9
+        versionName = "1.11.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
