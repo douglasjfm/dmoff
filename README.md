@@ -69,31 +69,19 @@ Sem listas negras para manter, sem cadastro, sem anúncios. É só ligar a chave
   <img src="https://img.shields.io/badge/Seja%20um%20testador-Google%20Play-E53935?style=for-the-badge&logo=googleplay&logoColor=white&labelColor=0F1417" alt="Seja um testador" />
 </p>
 
-Já tenho algumas pessoas nos testes da playstore. Caso se interesse em usar/testar/contribuir, seguem os links:
+Caso se interesse em usar/testar/contribuir, precisa fornecer seu email da PlayStore pois ainda está nas fases de testes fechados:
 
-1. Entre no grupo de testadores: **[LINK DO GOOGLE GROUP]**
-2. Aceite o convite de teste na Play Store: **[LINK DE OPT-IN DO TESTE FECHADO]**
+1. Enviar email: **[[LINK DO GOOGLE GROUP]](https://forms.gle/RqiQzw85cc4sdCMKA)**
+2. Aceite o convite de teste na Play Store (precisarei ter adicionado seu email antes..rsrs): **[[LINK DE OPT-IN DO TESTE FECHADO]](https://play.google.com/apps/internaltest/4700406798509207687)**
 3. Instale o app e pronto!
 
 Ficou com alguma dúvida? Abra uma [issue com o título "Quero testar"](https://github.com/douglasjfm/dmoff/issues/new?title=Quero%20testar). *(Não publique seu e-mail na issue, porque ela é pública.)*
 
-> 💬 Retribuo com prazer: se você também precisa de testadores para o seu app, é só falar na issue.
+> Qualquer coisa só falar na issue.
 
 ---
 
-## 🛠️ Para desenvolvedores
-
-Feito em **Kotlin** com **Jetpack Compose** e **Material 3**.
-
-```bash
-git clone https://github.com/douglasjfm/dmoff.git
-cd dmoff
-./gradlew assembleDebug
-```
-
-Depois, abra o projeto no Android Studio, conecte um dispositivo e rode o módulo `app`. Para testar o bloqueio de verdade, defina o **Deixe-me OFF** como app de triagem de chamadas quando o sistema pedir.
-
-Contribuições, sugestões e relatos de bugs são bem-vindos pelas [issues](https://github.com/douglasjfm/dmoff/issues).
+Contribuições, sugestões e relatos de bugs são bem-vindos.
 
 ---
 
