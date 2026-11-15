@@ -13,18 +13,17 @@
   <img alt="Plataforma" src="https://img.shields.io/badge/Android-10%2B-80D4D6?style=for-the-badge&logo=android&logoColor=0F1417&labelColor=0F1417" />
   <img alt="Versão" src="https://img.shields.io/badge/vers%C3%A3o-1.11.9-E53935?style=for-the-badge&labelColor=0F1417" />
   <img alt="Kotlin" src="https://img.shields.io/badge/Kotlin-Compose-80D4D6?style=for-the-badge&logo=kotlin&logoColor=80D4D6&labelColor=0F1417" />
-  <img alt="Testadores" src="https://img.shields.io/badge/procura--se-testadores-E53935?style=for-the-badge&logo=googleplay&logoColor=white&labelColor=0F1417" />
 </p>
 
 ---
 
 ## 📵 O que é
 
-O **Deixe-me OFF** nasceu de uma necessidade simples: parar de ser interrompido por ligações de telemarketing, golpes e números desconhecidos. Tentei usar uns 2 apps diferentes que achei na PlayStore e não sei por que cargas d'agua não funcionaram!
+O **Deixe-me OFF** nasceu de uma necessidade simples: parar de ser interrompido por ligações de telemarketing, golpes e números desconhecidos. Encontrei 2 apps diferentes na PlayStore e não sei por que cargas d'agua, infelizmente, não funcionaram! Então fiz o dmoff.
 
-A ideia é direta: **quando habilitado, o app bloqueia todas as chamadas de números que não estão na sua agenda de contatos.** Quem você conhece continua chegando normalmente; o resto fica de fora, sem toque e sem interrupção.
+A ideia é direta: **quando habilitado, o app bloqueia todas as chamadas de números que não estão na sua agenda de contatos.** Quem você conhece continua chegando normalmente; o resto fica de fora, sem toque e sem interrupção. Na tela inicial há um contador de ligações bloqueadas, e pelo histórico de bloquios pode-se aocmpanhar o funcionamento do app.
 
-Sem listas negras para manter, sem cadastro, sem anúncios. É só ligar a chave e pronto.
+Sem block lists para manter, sem cadastro, sem anúncios. É só ligar a chave e pronto. Não existe nenhum dado salvo/armazenado fora do smartphone. O app funciona offline.
 
 ## ✨ Funcionalidades
 
@@ -65,39 +64,23 @@ Sem listas negras para manter, sem cadastro, sem anúncios. É só ligar a chave
 
 ## 🙋 Usuários voluntários...
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Seja%20um%20testador-Google%20Play-E53935?style=for-the-badge&logo=googleplay&logoColor=white&labelColor=0F1417" alt="Seja um testador" />
-</p>
+Caso se interesse em usar/testar/contribuir, precisa fornecer seu email da PlayStore pois ainda está nas fases de testes fechados:
 
-Já tenho algumas pessoas nos testes da playstore. Caso se interesse em usar/testar/contribuir, seguem os links:
-
-1. Entre no grupo de testadores: **[LINK DO GOOGLE GROUP]**
-2. Aceite o convite de teste na Play Store: **[LINK DE OPT-IN DO TESTE FECHADO]**
+1. Enviar email: **[[FORM DO GOOGLE]](https://forms.gle/RqiQzw85cc4sdCMKA)**
+2. Aceite o convite de teste na Play Store (precisarei ter adicionado seu email antes..rsrs): **[[LINK DE OPT-IN DO TESTE FECHADO]](https://play.google.com/apps/internaltest/4700406798509207687)**
 3. Instale o app e pronto!
 
 Ficou com alguma dúvida? Abra uma [issue com o título "Quero testar"](https://github.com/douglasjfm/dmoff/issues/new?title=Quero%20testar). *(Não publique seu e-mail na issue, porque ela é pública.)*
 
-> 💬 Retribuo com prazer: se você também precisa de testadores para o seu app, é só falar na issue.
+> Qualquer coisa só falar na issue.
 
 ---
 
-## 🛠️ Para desenvolvedores
-
-Feito em **Kotlin** com **Jetpack Compose** e **Material 3**.
-
-```bash
-git clone https://github.com/douglasjfm/dmoff.git
-cd dmoff
-./gradlew assembleDebug
-```
-
-Depois, abra o projeto no Android Studio, conecte um dispositivo e rode o módulo `app`. Para testar o bloqueio de verdade, defina o **Deixe-me OFF** como app de triagem de chamadas quando o sistema pedir.
-
-Contribuições, sugestões e relatos de bugs são bem-vindos pelas [issues](https://github.com/douglasjfm/dmoff/issues).
+Contribuições, sugestões e relatos de bugs são bem-vindos.
 
 ---
 
 <p align="center">
   <img src="letmeoff1.jpg" alt="" width="48" /><br/>
-  <sub>Feito com ☕ e pouca paciência para telemarketing.</sub>
+  <sub>"Feito com ☕ e pouca paciência para telemarketing".</sub>
 </p>
