@@ -20,7 +20,7 @@
 
 ## 📵 O que é
 
-O **Deixe-me OFF** nasceu de uma necessidade simples: parar de ser interrompido por ligações de telemarketing, golpes e números desconhecidos.
+O **Deixe-me OFF** nasceu de uma necessidade simples: parar de ser interrompido por ligações de telemarketing, golpes e números desconhecidos. Tentei usar uns 2 apps diferentes que achei na PlayStore e não sei por que cargas d'agua não funcionaram!
 
 A ideia é direta: **quando habilitado, o app bloqueia todas as chamadas de números que não estão na sua agenda de contatos.** Quem você conhece continua chegando normalmente; o resto fica de fora, sem toque e sem interrupção.
 
@@ -63,23 +63,13 @@ Sem listas negras para manter, sem cadastro, sem anúncios. É só ligar a chave
 
 ---
 
-## 🙋 Procura-se: testadores voluntários
+## 🙋 Usuários voluntários...
 
 <p align="center">
   <img src="https://img.shields.io/badge/Seja%20um%20testador-Google%20Play-E53935?style=for-the-badge&logo=googleplay&logoColor=white&labelColor=0F1417" alt="Seja um testador" />
 </p>
 
-O **Deixe-me OFF** é um projeto independente, feito por uma pessoa só, no tempo livre. Para chegar à **Google Play Store**, o app precisa passar por um período de **teste fechado** com um número mínimo de testadores ativos. É aí que você entra.
-
-Se você é dev, sabe como é: um projeto pessoal só sai do papel quando alguém da comunidade estende a mão. **Participar custa muito pouco:**
-
-- 📲 Instale o app pela Play Store por meio do link de teste;
-- ⏳ Mantenha-o instalado durante o período de teste (cerca de 14 dias);
-- 🐞 Se puder, conte o que achou: bugs, ideias, qualquer coisa.
-
-Não é preciso escrever código nem fazer relatórios. **Só manter o app instalado já é uma grande ajuda.** E, de quebra, você ganha um celular mais silencioso. 😉
-
-**Quer ajudar?**
+Já tenho algumas pessoas nos testes da playstore. Caso se interesse em usar/testar/contribuir, seguem os links:
 
 1. Entre no grupo de testadores: **[LINK DO GOOGLE GROUP]**
 2. Aceite o convite de teste na Play Store: **[LINK DE OPT-IN DO TESTE FECHADO]**
