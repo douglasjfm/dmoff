@@ -31,7 +31,7 @@ Sem listas negras para manter, sem cadastro, sem anúncios. É só ligar a chave
 | | |
 |---|---|
 | 🔴 **Um toque para ligar/desligar** | Ative ou desative o bloqueio direto na tela inicial. |
-| 📇 **Agenda como lista branca** | Só tocam as chamadas de quem está nos seus contatos. |
+| 📇 **Agenda como lista permitida (allowlist)** | Só tocam as chamadas de quem está nos seus contatos. |
 | 🔢 **Comparação inteligente de números** | Contatos salvos com ou sem DDD, `+55` ou outros prefixos são reconhecidos pelos últimos 8 dígitos. |
 | 📊 **Contador de bloqueios** | Veja quantas chamadas foram barradas desde a ativação. |
 | 🗂️ **Histórico de chamadas bloqueadas** | Consulte o número e o horário de cada chamada barrada. |
