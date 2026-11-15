@@ -71,7 +71,7 @@ Sem listas negras para manter, sem cadastro, sem anúncios. É só ligar a chave
 
 Caso se interesse em usar/testar/contribuir, precisa fornecer seu email da PlayStore pois ainda está nas fases de testes fechados:
 
-1. Enviar email: **[[LINK DO GOOGLE GROUP]](https://forms.gle/RqiQzw85cc4sdCMKA)**
+1. Enviar email: **[[FORM DO GOOGLE]](https://forms.gle/RqiQzw85cc4sdCMKA)**
 2. Aceite o convite de teste na Play Store (precisarei ter adicionado seu email antes..rsrs): **[[LINK DE OPT-IN DO TESTE FECHADO]](https://play.google.com/apps/internaltest/4700406798509207687)**
 3. Instale o app e pronto!
 
