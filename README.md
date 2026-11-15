@@ -87,5 +87,5 @@ Contribuições, sugestões e relatos de bugs são bem-vindos.
 
 <p align="center">
   <img src="letmeoff1.jpg" alt="" width="48" /><br/>
-  <sub>Feito com ☕ e pouca paciência para telemarketing.</sub>
+  <sub>"Feito com ☕ e pouca paciência para telemarketing".</sub>
 </p>
