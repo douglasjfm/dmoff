@@ -66,8 +66,8 @@ Sem block lists para manter, sem cadastro, sem anúncios. É só ligar a chave e
 
 Caso se interesse em usar/testar/contribuir, precisa fornecer seu email da PlayStore pois ainda está nas fases de testes fechados:
 
-1. Enviar email: **[[FORM DO GOOGLE]](https://forms.gle/RqiQzw85cc4sdCMKA)**
-2. Aceite o convite de teste na Play Store (precisarei ter adicionado seu email antes..rsrs): **[[LINK DE OPT-IN DO TESTE FECHADO]](https://play.google.com/apps/internaltest/4700406798509207687)**
+1. Enviar email: **[[LINK DO GOOGLEGROUPS]](https://groups.google.com/g/usuarios-dmoff)**
+2. Aceite o convite de teste na Play Store (precisa estar no google groups antes): **[[LINK DE OPT-IN DO TESTE FECHADO]](https://play.google.com/apps/internaltest/4700406798509207687)**
 3. Instale o app e pronto!
 
 Ficou com alguma dúvida? Abra uma [issue com o título "Quero testar"](https://github.com/douglasjfm/dmoff/issues/new?title=Quero%20testar). *(Não publique seu e-mail na issue, porque ela é pública.)*
