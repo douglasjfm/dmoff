@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "douglasltda.dev.offcalls"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "douglasltda.dev.offcalls"
         minSdk = 29
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 9
         versionName = "1.11.9"
 
